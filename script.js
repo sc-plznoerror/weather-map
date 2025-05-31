@@ -127,19 +127,26 @@ map.on('click', async function (e) {
     const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
 
     // 주소 정보 처리
-    const addr = addressData.address || {};
-    const state = addr.state || '';
-    const city = addr.city || addr.county || addr.town || '';
-    const locationName = `${state} ${city}`.trim();
+  const addr = addressData.address || {};
+  const state = addr.state || '';
+  const city = addr.city || addr.county || addr.town || '';
+  const locationName = `${state} ${city}`.trim();
 
-    const popupContent = `
-      <div style="text-align:center;">
-        <strong>${locationName || '알 수 없는 위치'}</strong><br>
-        <img src="${iconUrl}" alt="${description}" /><br>
-        ${description}<br>
-        <b>${temp}°C</b>
-      </div>
-    `;
+  const fullAddress = addressData.display_name || '';
+  const trimmedAddress = fullAddress
+   .split(', ')
+   .filter(part => part !== '대한민국')  // ← 여기!
+   .join(', ');
+
+  const popupContent = `
+   <div style="text-align:center;">
+     <strong>${locationName || '알 수 없는 지역'}</strong><br>
+     <small style="color:gray;">${trimmedAddress}</small><br>
+      <img src="${iconUrl}" alt="${description}" /><br>
+      ${description}<br>
+      <b>${temp}°C</b>
+    </div>
+  `;
 
     L.popup()
       .setLatLng([lat, lon])
