@@ -32,3 +32,19 @@ canvas {
   height: 500px;
   margin: 0 auto;
 }
+
+.main-button {
+  padding: 10px 20px;
+  background-color: #007acc;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 20px;
+}
+
+.main-button:hover {
+  background-color: #005fa3;
+}
