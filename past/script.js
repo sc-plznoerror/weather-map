@@ -45,49 +45,74 @@ function drawChart(labels, temps, rains, humids) {
     chart.destroy();
   }
 
+  const datasets = [];
+
+  if (document.getElementById("showTemp").checked) {
+    datasets.push({
+      label: "기온 (°C)",
+      data: temps,
+      borderColor: "red",
+      backgroundColor: "rgba(255,0,0,0.1)",
+      yAxisID: "y1"
+    });
+  }
+
+  if (document.getElementById("showRain").checked) {
+    datasets.push({
+      label: "강수량 (mm)",
+      data: rains,
+      borderColor: "blue",
+      backgroundColor: "rgba(0,0,255,0.1)",
+      yAxisID: "y2"
+    });
+  }
+
+  if (document.getElementById("showHumidity").checked) {
+    datasets.push({
+      label: "습도 (%)",
+      data: humids,
+      borderColor: "green",
+      backgroundColor: "rgba(0,255,0,0.1)",
+      yAxisID: "y3"
+    });
+  }
+
   chart = new Chart(ctx, {
     type: "line",
     data: {
       labels,
-      datasets: [
-        {
-          label: "기온 (°C)",
-          data: temps,
-          borderColor: "red",
-          yAxisID: "y1"
-        },
-        {
-          label: "강수량 (mm)",
-          data: rains,
-          borderColor: "blue",
-          yAxisID: "y2"
-        },
-        {
-          label: "습도 (%)",
-          data: humids,
-          borderColor: "green",
-          yAxisID: "y3"
-        }
-      ]
+      datasets
     },
     options: {
       responsive: true,
+      plugins: {
+        datalabels: {
+          anchor: 'end',
+          align: 'top',
+          color: 'black',
+          font: {
+            weight: 'bold'
+          },
+          formatter: value => `${value}`
+        }
+      },
       scales: {
         y1: {
           type: "linear",
           position: "left",
-          title: { display: true, text: "기온" }
+          title: { display: true, text: "기온 (°C)" }
         },
         y2: {
           type: "linear",
           position: "right",
-          title: { display: true, text: "강수량" },
+          title: { display: true, text: "강수량 (mm)" },
           grid: { drawOnChartArea: false }
         },
         y3: {
           display: false
         }
       }
-    }
+    },
+    plugins: [ChartDataLabels]
   });
 }

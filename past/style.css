@@ -27,6 +27,8 @@ input, button {
 }
 
 canvas {
-  max-width: 800px;
+  max-width: 1000px;
+  width: 100%;
+  height: 500px;
   margin: 0 auto;
 }

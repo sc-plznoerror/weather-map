@@ -23,10 +23,17 @@
       <input type="date" id="endDate" />
     </label>
     <button onclick="fetchPastWeather()">날씨 조회</button>
+    <div>
+      <label><input type="checkbox" id="showTemp" checked /> 기온</label>
+      <label><input type="checkbox" id="showRain" checked /> 강수량</label>
+      <label><input type="checkbox" id="showHumidity" checked /> 습도</label>
+    </div>
+    <button onclick="fetchPastWeather()">날씨 조회</button>
   </div>
 
   <canvas id="weatherChart"></canvas>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <script src="script.js"></script>
 </body>
 </html>
