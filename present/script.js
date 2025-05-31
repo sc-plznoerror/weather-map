@@ -64,6 +64,23 @@ function goToRegion(regionName) {
     });
 }
 
+let borderLayer = null;
+
+function drawBorder(geojson) {
+  if (borderLayer) map.removeLayer(borderLayer);
+
+  borderLayer = L.geoJSON(geojson, {
+    style: { color: "#ff6600", weight: 2, fill: false }
+  }).addTo(map);
+}
+
+function removeBorders() {
+  if (borderLayer) {
+    map.removeLayer(borderLayer);
+    borderLayer = null;
+  }
+}
+
 // 클릭 시 날씨 정보 가져오기 + 팝업 띄우기
 map.on('click', async function (e) {
   const lat = e.latlng.lat;
