@@ -56,17 +56,3 @@ body {
     .buttons a:hover {
       background-color: #005fa3;
     }
-  .border-button {
-    padding: 8px 16px;
-    background-color: #999;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-
-  .border-button:hover {
-    background-color: #666;
-  }
