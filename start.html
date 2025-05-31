@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>날씨 정보 홈</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(to bottom, #cceeff, #ffffff);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #003366;
+      margin-bottom: 50px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 40px;
+    }
+
+    .buttons a {
+      display: inline-block;
+      padding: 20px 40px;
+      background-color: #0077cc;
+      color: white;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 1.5rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .buttons a:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌦 날씨 정보 서비스</h1>
+  <div class="buttons">
+    <a href="current/now.html">현재 날씨 지도</a>
+    <a href="past/past.html">과거 날씨 정보</a>
+  </div>
+</body>
+</html>
