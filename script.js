@@ -10,44 +10,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// 클릭 이벤트
-map.on('click', async function (e) {
-  const lat = e.latlng.lat;
-  const lng = e.latlng.lng;
-  const infoDiv = document.getElementById('info');
-
-  infoDiv.innerHTML = `<p>위도: ${lat.toFixed(5)}, 경도: ${lng.toFixed(5)}</p><p>주소 조회 중...</p>`;
-
-  try {
-    // 주소 얻기 (Reverse Geocoding)
-    const geoRes = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${OPENCAGE_API_KEY}&language=ko`);
-    const geoData = await geoRes.json();
-    const components = geoData.results[0].components;
-    const address = geoData.results[0].formatted;
-
-    // 날씨 정보
-    const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`);
-    const weatherData = await weatherRes.json();
-
-    const weatherDescription = weatherData.weather[0].description;
-    const temp = weatherData.main.temp;
-    const city = weatherData.name;
-
-    infoDiv.innerHTML = `
-      <h3>📍 위치 정보</h3>
-      <p><strong>주소:</strong> ${address}</p>
-      <p><strong>행정구역:</strong> ${components.state_district || components.city || components.town || '정보 없음'}</p>
-      <h3>🌦️ 날씨 정보</h3>
-      <p><strong>지역:</strong> ${city}</p>
-      <p><strong>날씨:</strong> ${weatherDescription}</p>
-      <p><strong>기온:</strong> ${temp}℃</p>
-    `;
-  } catch (err) {
-    console.error(err);
-    infoDiv.innerHTML = "<p>오류가 발생했습니다. 콘솔을 확인해 주세요.</p>";
-  }
-});
-
 // 현재 표시 중인 도 경계 레이어를 기억
 let currentBoundaryLayer = null;
 
@@ -123,6 +85,7 @@ map.on('click', async function (e) {
 
     const description = weatherData.weather[0].description;
     const temp = weatherData.main.temp;
+    const hum = weatherData.main.humidity
     const icon = weatherData.weather[0].icon;
     const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
 
@@ -144,7 +107,8 @@ map.on('click', async function (e) {
      <small style="color:gray;">${trimmedAddress}</small><br>
       <img src="${iconUrl}" alt="${description}" /><br>
       ${description}<br>
-      <b>${temp}°C</b>
+      <b>${Math.floor(temp)}°C</b><br>
+      <b>${hum}%</b>
     </div>
   `;
 
