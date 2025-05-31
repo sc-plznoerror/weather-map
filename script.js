@@ -101,3 +101,75 @@ function goToRegion(regionName) {
       console.error(err);
     });
 }
+
+// 클릭 시 날씨 정보 가져오기 + 팝업 띄우기
+map.on('click', async function (e) {
+  const lat = e.latlng.lat;
+  const lon = e.latlng.lng;
+
+  // OpenWeather API 호출
+  const apiKey = '5f368635c5c63428bd32ef71baf00025'; // ← 본인의 키로 바꾸세요
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=kr`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const weatherDescription = data.weather[0].description;
+    const temp = data.main.temp;
+    const locationName = data.name || `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+
+    // 말풍선 생성
+    const popup = L.popup()
+      .setLatLng([lat, lon])
+      .setContent(`<b>${locationName}</b><br>날씨: ${weatherDescription}<br>온도: ${temp}°C`)
+      .openOn(map); // 지도 위에 띄우기
+  } catch (error) {
+    console.error("날씨 정보를 가져오지 못했습니다:", error);
+  }
+});
+
+map.on('click', async function (e) {
+  const lat = e.latlng.lat;
+  const lon = e.latlng.lng;
+
+  const weatherApiKey = '5f368635c5c63428bd32ef71baf00025';
+  const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherApiKey}&units=metric&lang=kr`;
+
+  const addressUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+
+  try {
+    // 날씨 정보 가져오기
+    const weatherRes = await fetch(weatherUrl);
+    const weatherData = await weatherRes.json();
+
+    const description = weatherData.weather[0].description;
+    const temp = weatherData.main.temp;
+    const icon = weatherData.weather[0].icon;
+    const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+
+    // 주소 정보 가져오기
+    const addressRes = await fetch(addressUrl);
+    const addressData = await addressRes.json();
+    const locationName = addressData.address?.state + ' ' + addressData.address?.city || addressData.display_name;
+
+    // 팝업 HTML 만들기
+    const popupContent = `
+      <div style="text-align:center;">
+        <strong>${locationName}</strong><br>
+        <img src="${iconUrl}" alt="${description}" /><br>
+        ${description}<br>
+        <b>${temp}°C</b>
+      </div>
+    `;
+
+    // 팝업 생성 및 표시
+    L.popup()
+      .setLatLng([lat, lon])
+      .setContent(popupContent)
+      .openOn(map);
+  } catch (error) {
+    console.error('에러 발생:', error);
+    alert('날씨나 위치 정보를 가져올 수 없습니다.');
+  }
+});
