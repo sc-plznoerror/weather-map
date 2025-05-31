@@ -3,7 +3,7 @@ const OPENCAGE_API_KEY = '2bd1923c563e46e8a2ed899b7fd3f128';       // ← OpenCa
 const OPENWEATHER_API_KEY = '5f368635c5c63428bd32ef71baf00025'; // ← OpenWeather API 키
 
 // 지도 초기화
-const map = L.map('map').setView([37.5665, 126.9780], 11); // 서울 중심
+const map = L.map('map').setView([37.5665, 126.9780], 8); // 서울 중심
 
 // 타일 레이어
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -73,7 +73,7 @@ function goToRegion(regionName) {
   }
 
   // 지도 이동
-  map.setView(coords, 10);
+  map.setView(coords, 7);
 
   // GeoJSON 경계선 로드
   const geoJsonUrl = `data/${regionName}.geojson`;
