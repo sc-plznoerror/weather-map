@@ -48,6 +48,10 @@ map.on('click', async function (e) {
   }
 });
 
+// 현재 표시 중인 도 경계 레이어를 기억
+let currentBoundaryLayer = null;
+
+// 도별 중심 좌표
 const regionCenters = {
   '경기도': [37.4138, 127.5183],
   '강원도': [37.8228, 128.1555],
@@ -60,11 +64,40 @@ const regionCenters = {
   '제주도': [33.4890, 126.4983],
 };
 
+// 버튼 클릭 시 지도 이동 + 경계선 로드
 function goToRegion(regionName) {
   const coords = regionCenters[regionName];
-  if (coords) {
-    map.setView(coords, 9); // 확대 레벨: 8~12 조정 가능
-  } else {
+  if (!coords) {
     alert("해당 지역 정보를 찾을 수 없습니다.");
+    return;
   }
+
+  // 지도 이동
+  map.setView(coords, 10);
+
+  // GeoJSON 경계선 로드
+  const geoJsonUrl = `data/${regionName}.geojson`;
+
+  // 이전 경계 제거
+  if (currentBoundaryLayer) {
+    map.removeLayer(currentBoundaryLayer);
+  }
+
+  fetch(geoJsonUrl)
+    .then(res => res.json())
+    .then(geojson => {
+      currentBoundaryLayer = L.geoJSON(geojson, {
+        style: {
+          color: "red",
+          weight: 2,
+          fill: false // 내부 색 없음
+        }
+      }).addTo(map);
+
+      map.fitBounds(currentBoundaryLayer.getBounds());
+    })
+    .catch(err => {
+      alert("경계 데이터를 불러올 수 없습니다.");
+      console.error(err);
+    });
 }
