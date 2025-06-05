@@ -12,7 +12,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // 현재 표시 중인 도 경계 레이어를 기억
 let currentBoundaryLayer = null;
-let hasZoomedIn = false;
 
 // 도별 중심 좌표
 const regionCenters = {
@@ -65,18 +64,19 @@ function goToRegion(regionName) {
     });
 }
 
-// 클릭 이벤트: 첫 클릭은 확대, 두 번째부터 날씨 표시
+// 클릭 이벤트: 줌 레벨에 따라 행동 분기
 map.on('click', async function (e) {
   const lat = e.latlng.lat;
   const lon = e.latlng.lng;
 
-  if (!hasZoomedIn) {
-    map.setView([lat, lon], 12); // 첫 클릭 시 확대
-    hasZoomedIn = true;
+  const currentZoom = map.getZoom();
+
+  if (currentZoom < 12) {
+    map.setView([lat, lon], 12); // 확대만 실행
     return;
   }
 
-  // 두 번째 이후 클릭: 날씨 정보 표시
+  // 날씨 정보 가져오기
   const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
   const addressUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
 
