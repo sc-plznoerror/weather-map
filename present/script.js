@@ -12,6 +12,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // 현재 표시 중인 도 경계 레이어를 기억
 let currentBoundaryLayer = null;
+let hasZoomedIn = false;
 
 // 도별 중심 좌표
 const regionCenters = {
@@ -64,17 +65,22 @@ function goToRegion(regionName) {
     });
 }
 
-// 클릭 시 날씨 정보 가져오기 + 팝업 띄우기
+// 클릭 이벤트: 첫 클릭은 확대, 두 번째부터 날씨 표시
 map.on('click', async function (e) {
   const lat = e.latlng.lat;
   const lon = e.latlng.lng;
 
-  const weatherApiKey = '5f368635c5c63428bd32ef71baf00025';
-  const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherApiKey}&units=metric&lang=kr`;
+  if (!hasZoomedIn) {
+    map.setView([lat, lon], 12); // 첫 클릭 시 확대
+    hasZoomedIn = true;
+    return;
+  }
+
+  // 두 번째 이후 클릭: 날씨 정보 표시
+  const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
   const addressUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
 
   try {
-    // 두 API 동시 호출
     const [weatherRes, addressRes] = await Promise.all([
       fetch(weatherUrl),
       fetch(addressUrl)
@@ -85,37 +91,37 @@ map.on('click', async function (e) {
 
     const description = weatherData.weather[0].description;
     const temp = weatherData.main.temp;
-    const hum = weatherData.main.humidity
+    const hum = weatherData.main.humidity;
     const icon = weatherData.weather[0].icon;
     const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
 
-    // 주소 정보 처리
-  const addr = addressData.address || {};
-  const state = addr.state || '';
-  const city = addr.city || addr.county || addr.town || '';
-  const locationName = `${state} ${city}`.trim();
+    const addr = addressData.address || {};
+    const state = addr.state || '';
+    const city = addr.city || addr.county || addr.town || '';
+    const locationName = `${state} ${city}`.trim();
 
-  const fullAddress = addressData.display_name || '';
-  const trimmedAddress = fullAddress
-   .split(', ')
-   .filter(part => part !== '대한민국')  // ← 여기!
-   .join(', ');
+    const fullAddress = addressData.display_name || '';
+    const trimmedAddress = fullAddress
+      .split(', ')
+      .filter(part => part !== '대한민국')
+      .join(', ');
 
-  const popupContent = `
-   <div style="text-align:center;">
-     <strong>${locationName || '알 수 없는 지역'}</strong><br>
-     <small style="color:gray;">${trimmedAddress}</small><br>
-      <img src="${iconUrl}" alt="${description}" /><br>
-      ${description}<br>
-      <b>${Math.floor(temp)}°C</b><br>
-      <b>${hum}%</b>
-    </div>
-  `;
+    const popupContent = `
+      <div style="text-align:center;">
+        <strong>${locationName || '알 수 없는 지역'}</strong><br>
+        <small style="color:gray;">${trimmedAddress}</small><br>
+        <img src="${iconUrl}" alt="${description}" /><br>
+        ${description}<br>
+        <b>${Math.floor(temp)}°C</b><br>
+        <b>${hum}%</b>
+      </div>
+    `;
 
     L.popup()
       .setLatLng([lat, lon])
       .setContent(popupContent)
       .openOn(map);
+
   } catch (error) {
     console.error('에러 발생:', error);
     alert('날씨나 주소 정보를 가져올 수 없습니다.');
