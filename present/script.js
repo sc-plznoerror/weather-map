@@ -36,34 +36,34 @@ function goToRegion(regionName) {
 
   // 지도 이동
   map.setView(coords, 9);
+
+
+  // GeoJSON 경계선 로드
+  const geoJsonUrl = `data/${regionName}.geojson`;
+
+  // 이전 경계 제거
+  if (currentBoundaryLayer) {
+    map.removeLayer(currentBoundaryLayer);
+  }
+
+  fetch(geoJsonUrl)
+    .then(res => res.json())
+    .then(geojson => {
+      currentBoundaryLayer = L.geoJSON(geojson, {
+        style: {
+          color: "red",
+          weight: 1,
+          fill: false // 내부 색 없음
+        }
+      }).addTo(map);
+
+      map.fitBounds(currentBoundaryLayer.getBounds());
+    })
+    .catch(err => {
+      alert("경계 데이터를 불러올 수 없습니다.");
+      console.error(err);
+    });
 }
-
-//   // GeoJSON 경계선 로드
-//   const geoJsonUrl = `data/${regionName}.geojson`;
-
-//   // 이전 경계 제거
-//   if (currentBoundaryLayer) {
-//     map.removeLayer(currentBoundaryLayer);
-//   }
-
-//   fetch(geoJsonUrl)
-//     .then(res => res.json())
-//     .then(geojson => {
-//       currentBoundaryLayer = L.geoJSON(geojson, {
-//         style: {
-//           color: "red",
-//           weight: 2,
-//           fill: false // 내부 색 없음
-//         }
-//       }).addTo(map);
-
-//       map.fitBounds(currentBoundaryLayer.getBounds());
-//     })
-//     .catch(err => {
-//       alert("경계 데이터를 불러올 수 없습니다.");
-//       console.error(err);
-//     });
-// }
 
 // 클릭 이벤트: 줌 레벨에 따라 행동 분기
 map.on('click', async function (e) {
@@ -71,7 +71,7 @@ map.on('click', async function (e) {
   const lon = e.latlng.lng;
   const currentZoom = map.getZoom();
 
-  if (currentZoom < 12) {
+  if (currentZoom < 14) {
     map.setView([lat, lon], currentZoom + 1); // 한 단계씩 확대
     return;
   }
