@@ -68,11 +68,10 @@ function goToRegion(regionName) {
 map.on('click', async function (e) {
   const lat = e.latlng.lat;
   const lon = e.latlng.lng;
-
   const currentZoom = map.getZoom();
 
-  if (currentZoom < 12) {
-    map.setView([lat, lon], 12); // 확대만 실행
+  if (currentZoom < 10) {
+    map.setView([lat, lon], currentZoom + 1); // 한 단계씩 확대
     return;
   }
 
