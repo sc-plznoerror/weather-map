@@ -70,7 +70,7 @@ map.on('click', async function (e) {
   const lon = e.latlng.lng;
   const currentZoom = map.getZoom();
 
-  if (currentZoom < 10) {
+  if (currentZoom < 12) {
     map.setView([lat, lon], currentZoom + 1); // 한 단계씩 확대
     return;
   }
