@@ -34,32 +34,33 @@ function goToRegion(regionName) {
     return;
   }
 
-  // 지도 이동
-  map.setView(coords, 9);
-
-
-  // GeoJSON 경계선 로드
-  const geoJsonUrl = `data/${regionName}.geojson`;
-
-  // 이전 경계 제거
+  // 기존 경계 제거
   if (currentBoundaryLayer) {
     map.removeLayer(currentBoundaryLayer);
   }
+
+  // GeoJSON 경계선 불러오기
+  const geoJsonUrl = `data/${regionName}.geojson`;
 
   fetch(geoJsonUrl)
     .then(res => res.json())
     .then(geojson => {
       currentBoundaryLayer = L.geoJSON(geojson, {
         style: {
-          color: "red",
-          weight : .4,
-          fill: true, // 내부 채우기 활성화
-          fillColor: "red",      // 채우는 색
-          fillOpacity: 0.5 
+          color: "red",        // 테두리 색
+          weight: .4,           // 테두리 두께
+          fill: true,          // 내부 채우기
+          fillColor: "red",    // 내부 색
+          fillOpacity: 0.5   // 흐릿한 정도
         }
-      }).addTo(map);
+      });
 
-      map.fitBounds(currentBoundaryLayer.getBounds());
+      currentBoundaryLayer.addTo(map);
+
+      map.fitBounds(currentBoundaryLayer.getBounds(), {
+        animate: true,
+        duration: 0.5
+      });
     })
     .catch(err => {
       alert("경계 데이터를 불러올 수 없습니다.");
