@@ -72,6 +72,9 @@ function clearMap() {
   if (currentBoundaryLayer) {
     map.removeLayer(currentBoundaryLayer);
     currentBoundaryLayer = null;}
+  else{
+    map.setView([36.5, 127.75], 7)
+  }
   map.setView([36.5, 127.75], 7);
 }
 
