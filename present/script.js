@@ -77,17 +77,27 @@ function clearMap() {
   }
   map.setView([36.5, 127.75], 7);
 }
-
+function clearbor(){
+  if(currentBoundaryLayer) {
+    map.removeLayer(currentBoundaryLayer)
+    currentBoundaryLayer = null;
+  }
+}
 // 클릭 이벤트: 줌 레벨에 따라 행동 분기
 map.on('click', async function (e) {
   const lat = e.latlng.lat;
   const lon = e.latlng.lng;
   const currentZoom = map.getZoom();
 
+  if (currentZoom > 8){
+    clearbor()
+  }
+
   if (currentZoom < 13) {
     map.setView([lat, lon], currentZoom + 1); // 한 단계씩 확대
     return;
   }
+
 
   else if (currentZoom >= 13){
     map.setView([lat, lon], currentZoom); // 어느정도 확대되면 이동만
