@@ -101,3 +101,48 @@ function drawChart(labels, temps, rains, humids) {
     plugins: [ChartDataLabels]
   });
 }
+
+async function fetchPastWeatherFromMyLocation() {
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
+
+  // 날짜 유효성 검사
+  const diff = (new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24);
+  if (diff < 2 || diff > 9) {
+    alert("기간은 최소 3일, 최대 10일까지 선택 가능합니다.");
+    return;
+  }
+
+  if (!navigator.geolocation) {
+    alert("이 브라우저는 위치 서비스를 지원하지 않습니다.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    // 시 이름 가져오기 (Nominatim Reverse Geocoding)
+    const addressUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+    const addressRes = await fetch(addressUrl);
+    const addressData = await addressRes.json();
+
+    const addr = addressData.address || {};
+    const cityName = addr.city || addr.town || addr.county || "알 수 없는 지역";
+
+    // 과거 날씨 API 호출
+    const weatherUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${start}&end_date=${end}&daily=temperature_2m_max,precipitation_sum,relative_humidity_2m_mean&timezone=Asia%2FSeoul`;
+    const weatherRes = await fetch(weatherUrl);
+    const weatherData = await weatherRes.json();
+
+    const dates = weatherData.daily.time;
+    const temps = weatherData.daily.temperature_2m_max;
+    const rains = weatherData.daily.precipitation_sum;
+    const humids = weatherData.daily.relative_humidity_2m_mean;
+
+    drawChart(dates, temps, rains, humids, cityName);
+  }, (error) => {
+    alert("위치 정보를 가져올 수 없습니다.");
+    console.error(error);
+  });
+}

@@ -10,10 +10,13 @@
   <h1>📅 과거 날씨 조회</h1>
 
   <div class="form">
-    <label>
-      📍 위치 :
-      <input type="text" id="locationInput" placeholder="예: 서울" />
-    </label>
+    <div>
+      <label>
+        📍 위치 :
+        <input type="text" id="locationInput" placeholder="직접 입력 예 : 서울" />
+      </label>
+      <button onclick="fetchPastWeatherFromMyLocation()">내 위치</button>
+    </div>
     <label>
       시작 날짜:
       <input type="date" id="startDate" />
