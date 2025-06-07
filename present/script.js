@@ -76,6 +76,10 @@ map.on('click', async function (e) {
     return;
   }
 
+  else if (currentZoom >= 13){
+    map.setView([lat, lon], currentZoom); // 어느정도 확대되면 이동만
+  }
+
   // 날씨 정보 가져오기
   const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
   const addressUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
