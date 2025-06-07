@@ -10,7 +10,7 @@ async function fetchPastWeather() {
     return;
   }
 
-  // 1. 위치 → 좌표 변환 (Nominatim API)
+  // 위치 → 좌표 변환 (Nominatim API)
   const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`;
   const geoRes = await fetch(geoUrl);
   const geoData = await geoRes.json();
@@ -23,7 +23,7 @@ async function fetchPastWeather() {
   const lat = geoData[0].lat;
   const lon = geoData[0].lon;
 
-  // 2. 과거 날씨 데이터 가져오기 (Open-Meteo)
+  // 과거 날씨 데이터 가져오기 (Open-Meteo)
   const weatherUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${start}&end_date=${end}&daily=temperature_2m_max,precipitation_sum,relative_humidity_2m_mean&timezone=Asia%2FSeoul`;
   const weatherRes = await fetch(weatherUrl);
   const weatherData = await weatherRes.json();
@@ -51,7 +51,7 @@ function drawChart(labels, temps, rains, humids) {
       borderColor: "red",
       backgroundColor: "rgba(255, 99, 132, 0.1)",
       tension: 0.2,
-      fill: true,
+      fill: false,
       yAxisID: "y1"
     });
   }
@@ -62,7 +62,7 @@ function drawChart(labels, temps, rains, humids) {
       borderColor: "blue",
       backgroundColor: "rgba(54, 162, 235, 0.1)",
       tension: 0.4,
-      fill: true,
+      fill: false,
       yAxisID: "y2"
     });
   }
@@ -73,7 +73,7 @@ function drawChart(labels, temps, rains, humids) {
       borderColor: "green",
       backgroundColor: "rgba(75, 192, 192, 0.1)",
       tension: 0.4,
-      fill: true,
+      fill: false,
       yAxisID: "y3"
     });
   }
@@ -93,9 +93,22 @@ function drawChart(labels, temps, rains, humids) {
         }
       },
       scales: {
-        y1: { position: "left", title: { display: true, text: "기온 (°C)" } },
-        y2: { position: "right", title: { display: true, text: "강수량 (mm)" }, grid: { drawOnChartArea: false } },
-        y3: { display: false }
+        x: {
+          grid: { display: false } // ✅ X축 격자 제거
+        },
+        y1: {
+          position: "left",
+          title: { display: true, text: "기온 (°C)" },
+          grid: { display: false } // ✅ Y1 축 격자 제거
+        },
+        y2: {
+          position: "right",
+          title: { display: true, text: "강수량 (mm)" },
+          grid: { display: false } // ✅ Y2 축 격자 제거
+        },
+        y3: {
+          display: false
+        }
       }
     },
     plugins: [ChartDataLabels]
@@ -106,7 +119,6 @@ async function fetchPastWeatherFromMyLocation() {
   const start = document.getElementById("startDate").value;
   const end = document.getElementById("endDate").value;
 
-  // 날짜 유효성 검사
   const diff = (new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24);
   if (diff < 2 || diff > 9) {
     alert("기간은 최소 3일, 최대 10일까지 선택 가능합니다.");
@@ -122,7 +134,6 @@ async function fetchPastWeatherFromMyLocation() {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
 
-    // 시 이름 가져오기 (Nominatim Reverse Geocoding)
     const addressUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
     const addressRes = await fetch(addressUrl);
     const addressData = await addressRes.json();
@@ -130,19 +141,6 @@ async function fetchPastWeatherFromMyLocation() {
     const addr = addressData.address || {};
     const cityName = addr.city || addr.town || addr.county || "알 수 없는 지역";
 
-    // 과거 날씨 API 호출
-    const weatherUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${start}&end_date=${end}&daily=temperature_2m_max,precipitation_sum,relative_humidity_2m_mean&timezone=Asia%2FSeoul`;
-    const weatherRes = await fetch(weatherUrl);
-    const weatherData = await weatherRes.json();
-
-    const dates = weatherData.daily.time;
-    const temps = weatherData.daily.temperature_2m_max;
-    const rains = weatherData.daily.precipitation_sum;
-    const humids = weatherData.daily.relative_humidity_2m_mean;
-
-    drawChart(dates, temps, rains, humids, cityName);
-  }, (error) => {
-    alert("위치 정보를 가져올 수 없습니다.");
-    console.error(error);
+    document.getElementById("locationInput").value = cityName;
   });
 }

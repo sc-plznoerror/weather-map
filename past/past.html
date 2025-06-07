@@ -15,7 +15,7 @@
         📍 위치 :
         <input type="text" id="locationInput" placeholder="직접 입력 예 : 서울" />
       </label>
-      
+      <button onclick="fetchPastWeatherFromMyLocation()">내 위치</button>
     </div>
     <label>
       시작 날짜:
@@ -30,10 +30,7 @@
       <label><input type="checkbox" id="showRain" checked /> 강수량</label>
       <label><input type="checkbox" id="showHumidity" checked /> 습도</label>
     </div>
-    <div>
-      <button onclick="fetchPastWeather()">날씨 조회</button>
-      <button onclick="fetchPastWeatherFromMyLocation()">내 위치</button>
-    </div>
+    <button onclick="fetchPastWeather()">날씨 조회</button>
   </div>
   <div class="form">
     <button class="main-button" onclick="location.href='../start.html'">메인으로</button>
