@@ -68,13 +68,10 @@ function goToRegion(regionName) {
     });
 }
 
-function removeBoundary() {
+function clearMap() {
   if (currentBoundaryLayer) {
     map.removeLayer(currentBoundaryLayer);
-    currentBoundaryLayer = null;
-  } else {
-    alert("현재 표시 중인 경계가 없습니다.");
-  }
+    currentBoundaryLayer = null;}
   map.setView([36.5, 127.75], 7);
 }
 
