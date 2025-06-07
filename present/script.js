@@ -68,6 +68,16 @@ function goToRegion(regionName) {
     });
 }
 
+function removeBoundary() {
+  if (currentBoundaryLayer) {
+    map.removeLayer(currentBoundaryLayer);
+    currentBoundaryLayer = null;
+  } else {
+    alert("현재 표시 중인 경계가 없습니다.");
+  }
+  map.setView([36.5, 127.75], 7);
+}
+
 // 클릭 이벤트: 줌 레벨에 따라 행동 분기
 map.on('click', async function (e) {
   const lat = e.latlng.lat;
