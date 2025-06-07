@@ -52,8 +52,10 @@ function goToRegion(regionName) {
       currentBoundaryLayer = L.geoJSON(geojson, {
         style: {
           color: "red",
-          weight: 1,
-          fill: false // 내부 색 없음
+          weight : .4,
+          fill: true, // 내부 채우기 활성화
+          fillColor: "red",      // 채우는 색
+          fillOpacity: 0.5 
         }
       }).addTo(map);
 
