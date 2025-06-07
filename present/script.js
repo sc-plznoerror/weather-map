@@ -144,3 +144,66 @@ map.on('click', async function (e) {
     alert('날씨나 주소 정보를 가져올 수 없습니다.');
   }
 });
+
+function showWeatherAtUserLocation() {
+  if (!navigator.geolocation) {
+    alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    map.flyTo([lat, lon], 13);
+
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
+    const addressUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+
+    try {
+      const [weatherRes, addressRes] = await Promise.all([
+        fetch(weatherUrl),
+        fetch(addressUrl)
+      ]);
+
+      const weatherData = await weatherRes.json();
+      const addressData = await addressRes.json();
+
+      const desc = weatherData.weather[0].description;
+      const temp = Math.round(weatherData.main.temp);
+      const hum = weatherData.main.humidity;
+      const icon = weatherData.weather[0].icon;
+      const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+
+      const addr = addressData.address || {};
+      const locationName = `${addr.state || ''} ${addr.city || addr.county || ''}`.trim();
+
+      const fullAddress = addressData.display_name || '';
+      const trimmedAddress = fullAddress
+        .split(', ')
+        .filter(part => part !== '대한민국')
+        .join(', ');
+
+      const popupContent = `
+        <div style="text-align:center;">
+          <strong>${locationName || '현재 위치'}</strong><br>
+          <small style="color:gray;">${trimmedAddress}</small><br>
+          <img src="${iconUrl}" alt="${desc}" /><br>
+          ${desc}<br>
+          <b>${temp}°C</b><br>
+          <b>${hum}%</b>
+        </div>
+      `;
+
+      L.popup()
+        .setLatLng([lat, lon])
+        .setContent(popupContent)
+        .openOn(map);
+    } catch (err) {
+      console.error(err);
+      alert("날씨 정보를 가져오는 데 실패했습니다.");
+    }
+  }, () => {
+    alert("위치 정보를 가져올 수 없습니다.");
+  });
+}
