@@ -40,10 +40,7 @@ let chart;
 
 function drawChart(labels, temps, rains, humids) {
   const ctx = document.getElementById("weatherChart").getContext("2d");
-
-  if (chart) {
-    chart.destroy();
-  }
+  if (chart) chart.destroy();
 
   const datasets = [];
 
@@ -52,37 +49,38 @@ function drawChart(labels, temps, rains, humids) {
       label: "기온 (°C)",
       data: temps,
       borderColor: "red",
-      backgroundColor: "rgba(255,0,0,0.1)",
+      backgroundColor: "rgba(255, 99, 132, 0.1)",
+      tension: 0.2,
+      fill: true,
       yAxisID: "y1"
     });
   }
-
   if (document.getElementById("showRain").checked) {
     datasets.push({
       label: "강수량 (mm)",
       data: rains,
       borderColor: "blue",
-      backgroundColor: "rgba(0,0,255,0.1)",
+      backgroundColor: "rgba(54, 162, 235, 0.1)",
+      tension: 0.4,
+      fill: true,
       yAxisID: "y2"
     });
   }
-
   if (document.getElementById("showHumidity").checked) {
     datasets.push({
       label: "습도 (%)",
       data: humids,
       borderColor: "green",
-      backgroundColor: "rgba(0,255,0,0.1)",
+      backgroundColor: "rgba(75, 192, 192, 0.1)",
+      tension: 0.4,
+      fill: true,
       yAxisID: "y3"
     });
   }
 
   chart = new Chart(ctx, {
     type: "line",
-    data: {
-      labels,
-      datasets
-    },
+    data: { labels, datasets },
     options: {
       responsive: true,
       plugins: {
@@ -90,27 +88,14 @@ function drawChart(labels, temps, rains, humids) {
           anchor: 'end',
           align: 'top',
           color: 'black',
-          font: {
-            weight: 'bold'
-          },
+          font: { weight: 'bold' },
           formatter: value => `${value}`
         }
       },
       scales: {
-        y1: {
-          type: "linear",
-          position: "left",
-          title: { display: true, text: "기온 (°C)" }
-        },
-        y2: {
-          type: "linear",
-          position: "right",
-          title: { display: true, text: "강수량 (mm)" },
-          grid: { drawOnChartArea: false }
-        },
-        y3: {
-          display: false
-        }
+        y1: { position: "left", title: { display: true, text: "기온 (°C)" } },
+        y2: { position: "right", title: { display: true, text: "강수량 (mm)" }, grid: { drawOnChartArea: false } },
+        y3: { display: false }
       }
     },
     plugins: [ChartDataLabels]
