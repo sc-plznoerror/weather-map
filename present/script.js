@@ -166,6 +166,7 @@ function showWeatherAtUserLocation() {
     const lon = position.coords.longitude;
 
     map.flyTo([lat, lon], 13);
+    clearbor()
 
     const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
     const addressUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
